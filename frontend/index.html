@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            min-height: 100vh;
+        }
+        
+        h1 {
+            color: #222;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #007bff, #6f42c1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            width: 90%;
+            max-width: 900px;
+        }
+        
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            transition: all 0.3s ease-in-out;
+            transform: translateY(0);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        h2 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            color: #495057;
+            border-bottom: 3px solid #dee2e6;
+            padding-bottom: 8px;
+        }
+        
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        li {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin: 8px 0;
+            transition: 0.3s;
+            border-left: 5px solid #007bff;
+        }
+        
+        li:hover {
+            background: #e9ecef;
+            transform: scale(1.02);
+            border-left: 5px solid #6f42c1;
+        }
+        
+        footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .loader {
+            border: 4px solid #e9ecef;
+            border-top: 4px solid #6f42c1;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 15px auto;
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1> Dashboard</h1>
+
+    <div class="container">
+        <div class="card">
+            <h2>User Service</h2>
+            <div class="loader" id="loader-users"></div>
+            <ul id="users"></ul>
+        </div>
+
+        <div class="card">
+            <h2>Order Service</h2>
+            <div class="loader" id="loader-orders"></div>
+            <ul id="orders"></ul>
+        </div>
+    </div>
+
+    <footer>
+        Built with using Docker & Jenkins CI/CD
+    </footer>
+    <script>
+        // Fetch Users
+        fetch("http://localhost:5000/users")
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("loader-users").style.display = "none";
+                document.getElementById("users").innerHTML =
+                    data.map(u => `<li><b>${u.id}</b> — ${u.name}</li>`).join("");
+            })
+            .catch(err => {
+                document.getElementById("loader-users").style.display = "none";
+                document.getElementById("users").innerHTML =
+                    "<li style='color:red;'>Failed to load Users ⚠️</li>";
+                console.error("User Service error:", err);
+            });
+
+        // Fetch Orders
+        fetch("http://localhost:7000/orders")
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("loader-orders").style.display = "none";
+                document.getElementById("orders").innerHTML =
+                    data.map(o => `<li><b>${o.item}</b> — ₹${o.price}</li>`).join("");
+            })
+            .catch(err => {
+                document.getElementById("loader-orders").style.display = "none";
+                document.getElementById("orders").innerHTML =
+                    "<li style='color:red;'>Failed to load Orders ⚠️</li>";
+                console.error("Order Service error:", err);
+            });
+    </script>
+
+
+</body>
+
+</html>
